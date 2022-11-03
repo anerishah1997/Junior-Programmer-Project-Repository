@@ -26,7 +26,10 @@ public abstract class Unit : MonoBehaviour,
 
     private void Start()
     {
-
+        if(MainManager.Instance != null)
+        {
+            SetColor(MainManager.Instance.teamColor); // the passed variable from the Menu scene's gameobject MainManager is set as the forklift 's color.
+        }
     }
 
     void SetColor(Color c)
