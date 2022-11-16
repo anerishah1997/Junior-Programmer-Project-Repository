@@ -31,8 +31,11 @@ public class OptimUnit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Profiler.BeginSample("Handling Time"); // begin profiling a piece of code with a custom label
         HandleTime();
+        Profiler.EndSample(); // end
 
+        Profiler.BeginSample("Rotating"); // begin profiling for rotating section.
         var t = transform;
 
         if(transform.position.x <= 0)
@@ -44,9 +47,13 @@ public class OptimUnit : MonoBehaviour
             transform.Rotate(0,0, currentAngularVelocity * Time.deltaTime);
         else if(transform.position.z < 0)
             transform.Rotate(0,0, -currentAngularVelocity * Time.deltaTime);
-        
-        Move();
+        Profiler.EndSample(); // end
 
+        Profiler.BeginSample("Moving"); // begin profiling for moving
+        Move();
+        Profiler.EndSample(); // end
+
+        Profiler.BeginSample("Boundary Check"); // begin profiling for boundary check
         //check if we are moving away from the zone and invert velocity if this is the case
         if (transform.position.x > areaSize.x && currentVelocity.x > 0)
         {
@@ -69,6 +76,7 @@ public class OptimUnit : MonoBehaviour
             currentVelocity.z *= -1;
             PickNewVelocityChangeTime();
         }
+        Profiler.EndSample(); // end
     }
 
 
@@ -96,7 +104,7 @@ public class OptimUnit : MonoBehaviour
 
     void Move()
     {
-        Vector3 position = transform.position;
+        /*Vector3 position = transform.position;
         
         float distanceToCenter = Vector3.Distance(Vector3.zero, position);
         float speed = 0.5f + distanceToCenter / areaSize.magnitude;
@@ -108,7 +116,10 @@ public class OptimUnit : MonoBehaviour
             position += currentVelocity * increment * speed;
         }
         
-        transform.position = position;
+        transform.position = position;*/
+
+        // optimized code.
+        transform.position = transform.position + currentVelocity * Time.deltaTime;
     }
 
     private void HandleTime()

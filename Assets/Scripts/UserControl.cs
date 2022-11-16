@@ -20,6 +20,51 @@ public class UserControl : MonoBehaviour
         Marker.SetActive(false);
     }
 
+    // making a seperate method for selection of Unit.
+    public void HandleSelection()
+    {
+        // cut paste the code from Update() to here, to make the selection code a seperate method.
+
+        var ray = GameCamera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
+        {
+            //the collider could be children of the unit, so we make sure to check in the parent
+            var unit = hit.collider.GetComponentInParent<Unit>();
+            m_Selected = unit;
+
+
+            //check if the hit object have a IUIInfoContent to display in the UI
+            //if there is none, this will be null, so this will hid the panel if it was displayed
+            var uiInfo = hit.collider.GetComponentInParent<UIMainScene.IUIInfoContent>();
+            UIMainScene.Instance.SetNewInfoContent(uiInfo);
+        }
+    }
+
+    // making a seperate method for movement of Unit.
+    public void HandleAction()
+    {
+        // cut paste the code from Update() to here, to make the movement code into a seperate method.
+
+        //right click give order to the unit
+        var ray = GameCamera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
+        {
+            var building = hit.collider.GetComponentInParent<Building>();
+
+            if (building != null)
+            {
+                m_Selected.GoTo(building);
+            }
+            else
+            {
+                m_Selected.GoTo(hit.point);
+            }
+        }
+    }
+
+
     private void Update()
     {
         Vector2 move = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
@@ -27,38 +72,11 @@ public class UserControl : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            var ray = GameCamera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
-            {
-                //the collider could be children of the unit, so we make sure to check in the parent
-                var unit = hit.collider.GetComponentInParent<Unit>();
-                m_Selected = unit;
-                
-                
-                //check if the hit object have a IUIInfoContent to display in the UI
-                //if there is none, this will be null, so this will hid the panel if it was displayed
-                var uiInfo = hit.collider.GetComponentInParent<UIMainScene.IUIInfoContent>();
-                UIMainScene.Instance.SetNewInfoContent(uiInfo);
-            }
+            HandleSelection(); // example of Abstraction Concept
         }
         else if (m_Selected != null && Input.GetMouseButtonDown(1))
-        {//right click give order to the unit
-            var ray = GameCamera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
-            {
-                var building = hit.collider.GetComponentInParent<Building>();
-                
-                if (building != null)
-                {
-                    m_Selected.GoTo(building);
-                }
-                else
-                {
-                    m_Selected.GoTo(hit.point);
-                }
-            }
+        {
+            HandleAction();  // example of Abstraction Concept
         }
 
         MarkerHandling();

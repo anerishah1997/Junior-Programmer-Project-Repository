@@ -5,7 +5,8 @@ using System.IO;
 
 public class MainManager : MonoBehaviour
 {
-    public static MainManager Instance; // this is the shared variable between any number of instances this class will have. This is directly accessible from any script.
+    // this is the shared variable between any number of instances this class will have. This is directly accessible from any script.
+    public static MainManager Instance { get; private set;  } // getter makes this variable read only & private setter allows to set the value of this variable within this class only.
     public Color teamColor; // now this variable is to store the selected color & pass it to the Main scene, for applying it onto forklift(vehicle). This variable is set in 
                             //"MenuUIHandler.cs"
 
@@ -36,6 +37,7 @@ public class MainManager : MonoBehaviour
         SaveData data = new SaveData();
         data.teamColor = teamColor; // assigning this's class team color to data's team color.
 
+        // Serialization - storing our data in JSON format & writing it onto a file.
         string json = JsonUtility.ToJson(data); // converting the SaveData's object to JSON format.
         File.WriteAllText(Application.persistentDataPath + "/savefile.json", json); // write string to a file at the provided path & also mention the file name.
     }
